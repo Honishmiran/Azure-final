@@ -241,7 +241,14 @@ variable "subnet_name"{
   type = string
 }
 
-variable "private_ip"{
+variable "private_ips"{
   description = "The Static Private IP of the virtual machine"
-  type = string
+  type = any
+  default = []
 }
+
+# variable "secondary_private_ip" {
+#   description = "The Secondary Static Private IP of the virtual machine"
+#   type = map
+#   default = {}
+# }

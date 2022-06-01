@@ -197,11 +197,14 @@ resource "azurerm_network_interface" "vm" {
   location                      = coalesce(var.location, data.azurerm_resource_group.vm.location)
   enable_accelerated_networking = var.enable_accelerated_networking
 
-  ip_configuration {
-    name                          = "${var.vm_hostname}_PrivateIp"
-    subnet_id                     = "/subscriptions/${local.subscription_id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Network/virtualNetworks/${var.virtual_network_name}/subnets/${var.subnet_name}"
-    private_ip_address_allocation = "Static"
-    private_ip_address = var.private_ip
+  dynamic "ip_configuration" {
+    for_each = var.private_ips
+    content {
+      name                          = "${var.vm_hostname}_private_ip_${index(var.private_ips, ip_configuration.value)}"
+      subnet_id                     = "/subscriptions/${local.subscription_id}/resourceGroups/${var.resource_group_name}/providers/Microsoft.Network/virtualNetworks/${var.virtual_network_name}/subnets/${var.subnet_name}"
+      private_ip_address_allocation = "Static"
+      private_ip_address = ip_configuration.value
+    }
   }
 
 }
